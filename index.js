@@ -4,6 +4,17 @@ const fs = require('fs');
 
 const server = http.createServer((req, res) => {
     const writePath = path.join(__dirname, 'database.json');
+     // ✅ Add CORS headers
+    res.setHeader('Access-Control-Allow-Origin', '*'); // Allow all origins
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'); // Optional
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type'); // Optional
+
+   // ⚠️ Handle CORS preflight request (OPTIONS)
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
 
     // ✅ Handle API request first
     if (req.method === 'POST' && req.url === '/api/submit') {
