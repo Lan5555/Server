@@ -4,7 +4,7 @@ const fs = require('fs');
 
 const server = http.createServer((req, res) => {
     const writePath = path.join(__dirname, 'database.json');
-     // ✅ Add CORS headers
+     
     res.setHeader('Access-Control-Allow-Origin', '*'); // Allow all origins
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'); // Optional
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type'); // Optional
