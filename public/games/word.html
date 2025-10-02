@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Word Chain - Scary Edition</title>
+  <style>
+    :root {
+      --bg: #121212;
+      --text: #f0f0f0;
+      --accent: #ff5252;
+      --success: #4caf50;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--accent);
+    }
+
+    #status {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    input[type="text"] {
+      width: 70%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      outline: none;
+      margin-right: 0.5rem;
+    }
+
+    button {
+      padding: 0.75rem 1.25rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #e53935;
+    }
+
+    .history {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1rem;
+      margin-top: 1.5rem;
+      border-radius: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    #timer {
+      font-size: 2rem;
+      margin: 1rem 0;
+      color: white;
+      transition: color 0.3s;
+    }
+
+    .danger {
+      color: red;
+      animation: pulse 0.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .shake {
+      animation: shake 0.4s;
+    }
+
+    @keyframes shake {
+      0% { transform: translate(0); }
+      25% { transform: translate(-5px); }
+      50% { transform: translate(5px); }
+      75% { transform: translate(-5px); }
+      100% { transform: translate(0); }
+    }
+
+    /* Modal styles */
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+
+    .modal.show {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: #222;
+      padding: 2rem;
+      border-radius: 10px;
+      text-align: center;
+      color: white;
+    }
+
+    .modal-content h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .restart-btn {
+      margin-top: 1rem;
+      padding: 0.75rem 1.5rem;
+      background: #4caf50;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Word Chain 😱</h1>
+    <div id="status">Start with any word</div>
+    <div>
+      <input type="text" id="inputWord" placeholder="Type a word..." />
+      <button id="submitBtn">Submit</button>
+    </div>
+    <div id="timer">10</div>
+    <div class="history" id="history"></div>
+  </div>
+
+  <!-- Modals -->
+  <div class="modal" id="winModal">
+    <div class="modal-content">
+      <h2>🎉 You Win!</h2>
+      <p>20 correct words in a row. You survived the horror.</p>
+      <button class="restart-btn" onclick="restartGame()">Play Again</button>
+    </div>
+  </div>
+
+  <div class="modal" id="loseModal">
+    <div class="modal-content">
+      <h2>💀 Game Over</h2>
+      <p>Time's up or invalid word.</p>
+      <button class="restart-btn" onclick="restartGame()">Try Again</button>
+    </div>
+  </div>
+
+  <script>
+    const input = document.getElementById("inputWord");
+    const submit = document.getElementById("submitBtn");
+    const historyDiv = document.getElementById("history");
+    const status = document.getElementById("status");
+    const timerDisplay = document.getElementById("timer");
+
+    const winModal = document.getElementById("winModal");
+    const loseModal = document.getElementById("loseModal");
+
+    let words = [];
+    let timer = 10;
+    let interval;
+    const maxWords = 20;
+
+    function startTimer() {
+      clearInterval(interval);
+      timer = 10;
+      updateTimerDisplay();
+      interval = setInterval(() => {
+        timer--;
+        updateTimerDisplay();
+        if (timer <= 3) {
+          timerDisplay.classList.add("danger");
+          document.body.classList.add("shake");
+        }
+        if (timer <= 0) {
+          gameOver();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      timerDisplay.textContent = timer;
+      if (timer > 3) {
+        timerDisplay.classList.remove("danger");
+        document.body.classList.remove("shake");
+      }
+    }
+
+    function validateWord(word) {
+      word = word.trim().toLowerCase();
+      if (!word) return false;
+      if (words.includes(word)) return false;
+      if (words.length > 0) {
+        const last = words[words.length - 1];
+        if (word[0] !== last[last.length - 1]) return false;
+      }
+      return true;
+    }
+
+    function gameOver() {
+      clearInterval(interval);
+      loseModal.classList.add("show");
+    }
+
+    function gameWin() {
+      clearInterval(interval);
+      winModal.classList.add("show");
+    }
+
+    function restartGame() {
+      words = [];
+      historyDiv.innerHTML = "";
+      status.textContent = "Start with any word";
+      input.value = "";
+      input.focus();
+      timerDisplay.textContent = "10";
+      winModal.classList.remove("show");
+      loseModal.classList.remove("show");
+      document.body.classList.remove("shake");
+      startTimer();
+    }
+
+    submit.addEventListener("click", () => {
+      const word = input.value.trim().toLowerCase();
+      if (validateWord(word)) {
+        words.push(word);
+        const entry = document.createElement("div");
+        entry.textContent = `${words.length}. ${word}`;
+        historyDiv.appendChild(entry);
+        input.value = "";
+        input.focus();
+        status.textContent = `Next word must start with "${word[word.length - 1].toUpperCase()}"`;
+        startTimer();
+
+        if (words.length >= maxWords) {
+          gameWin();
+        }
+      } else {
+        gameOver();
+      }
+    });
+
+    input.addEventListener("keyup", (e) => {
+      if (e.key === "Enter") submit.click();
+    });
+
+    // Start the game initially
+    restartGame();
+  </script>
+</body>
+</html>

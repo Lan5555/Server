@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trivia Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f4f6f9;
+      color: #333;
+      padding: 2rem;
+    }
+
+    /* Stylish Title */
+    .title {
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #ff7e5f, #feb47b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .title i {
+      font-size: 2rem;
+      color: #ff7e5f;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media only screen and (min-width:542px) and (max-width:1024px){
+        .dashboard {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 2rem;
+    }
+    }
+
+    /* Trivia Cards */
+    .available-triva {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .trivia-card {
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: center;
+    }
+
+    .trivia-card img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 0.8rem;
+    }
+
+    .trivia-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .trivia-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .trivia-card p {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .trivia-card button {
+      margin-top: 1rem;
+      padding: 0.6rem 1rem;
+      border: none;
+      background-color: #4a90e2;
+      color: #fff;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .trivia-card button:hover {
+      background-color: #357ac8;
+    }
+
+    /* Activity Log */
+    .activity-log {
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .activity-log h4 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 0.5rem;
+    }
+
+    .activity-log ul {
+      list-style: none;
+    }
+
+    .activity-log li {
+      padding: 0.5rem 0;
+      border-bottom: 1px dashed #eee;
+      font-size: 0.9rem;
+      color: #444;
+    }
+
+    /* Rewards Section */
+    .rewards {
+      background: linear-gradient(135deg, #ffb347, #ffcc33);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      text-align: center;
+      color: #fff;
+      
+    }
+
+    .rewards h4 {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+    }
+
+    .level-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: #fff;
+      color: #ff9800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0 auto 1rem;
+      box-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+
+    .reward-btn {
+      display: block;
+      margin: 1rem auto 0;
+      padding: 0.6rem 1rem;
+      border: none;
+      background-color: #fff;
+      color: #ff9800;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .reward-btn:hover {
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1 class="title">
+    <i class="fa-solid fa-star"></i>
+    Trivia Game Lobby
+    <i class="fa-solid fa-trophy"></i>
+  </h1>
+
+  <div class="dashboard">
+
+  </div>
+</body>
+<script src="main.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+
+  socket.on("userCount", (count) => {
+    document.querySelectorAll(".trivia-card p").forEach(el => {
+      el.textContent = "Players Online: " + count;
+    });
+  });
+</script>
+</html>

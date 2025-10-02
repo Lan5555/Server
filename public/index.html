@@ -1,13 +1,40 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="main.js">
+    <title>Lan's Server</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <button class="btn">Make request</button>
-    <p class="result"></p>
+    <!-- splash -->
+    <div class="container">
+        <header>
+            <h1>Lan's Domain</h1>
+            <p>Explore the realm of possiblities</p>
+        </header>
+        
+        <main id="main-content">
+            <!-- Start Screen -->
+            <section id="start-screen" class="screen active">
+                <h2>Welcome to Lan's Server</h2>
+                <button id="start-btn">Enter</button>
+            </section>        
+        </main>
+        
+        <footer>
+            <p>&copy; 2025 Lan's server. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <div class="available-triva"></div>
+    
+    <script>
+        const startButton = document.querySelector('#start-btn');
+        startButton.addEventListener('click',() => {
+            window.location.href = 'dashboard.html';
+        });
+    </script>
 </body>
-<script src="main.js"></script>
 </html>

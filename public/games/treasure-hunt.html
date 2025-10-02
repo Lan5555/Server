@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Clue-Based Treasure Hunt</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #121212;
+      color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 90%;
+      padding: 2rem;
+      background: #1e1e1e;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.05);
+      text-align: center;
+    }
+
+    h1 {
+      color: #ffcc00;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .clue {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    input[type="text"] {
+      padding: 0.8rem;
+      width: 80%;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+      outline: none;
+    }
+
+    button {
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      background-color: #ffcc00;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #e6b800;
+    }
+
+    .feedback {
+      margin-top: 1rem;
+      font-size: 1rem;
+      height: 1.5rem;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+
+    .modal.show {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: #222;
+      padding: 2rem;
+      border-radius: 10px;
+      text-align: center;
+      color: white;
+    }
+
+    .modal-content h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .restart-btn {
+      margin-top: 1rem;
+      padding: 0.75rem 1.5rem;
+      background: #4caf50;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    @media(max-width: 500px) {
+      h1 { font-size: 2rem; }
+      .clue { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Treasure Hunt 🧩</h1>
+    <div class="clue" id="clueText">Loading clue...</div>
+    <input type="text" id="answerInput" placeholder="Type your answer..." />
+    <br>
+    <button id="submitBtn">Submit</button>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <!-- Win Modal -->
+  <div class="modal" id="winModal">
+    <div class="modal-content">
+      <h2>🎉 You Found the Treasure!</h2>
+      <p>The chest is yours, brave solver!</p>
+      <button class="restart-btn" onclick="restartGame()">Play Again</button>
+    </div>
+  </div>
+
+  <div class="modal" id="loseModal">
+    <div class="modal-content">
+      <h2>Game Over!</h2>
+      <p>Try harder next time</p>
+      <button class="restart-btn" onclick="restartGame()">Play Again</button>
+    </div>
+  </div>
+
+  <script>
+    const clues = [
+  {
+    riddle: "I speak without a mouth and hear without ears. I have nobody, but I come alive with the wind. What am I?",
+    answer: "echo"
+  },
+  {
+    riddle: "The more of me you take, the more you leave behind. What am I?",
+    answer: "footsteps"
+  },
+  {
+    riddle: "I’m tall when I’m young, and I’m short when I’m old. What am I?",
+    answer: "candle"
+  },
+  {
+    riddle: "I have keys but no locks. I have space but no room. You can enter, but you can’t go outside. What am I?",
+    answer: "keyboard"
+  },
+  {
+    riddle: "Final clue: I go up but never come down. What am I?",
+    answer: "age"
+  },
+  // Harder riddles start here:
+  {
+    riddle: "I am not alive, but I grow. I don’t have lungs, but I need air. What am I?",
+    answer: "fire"
+  },
+  {
+    riddle: "What has cities, but no houses; forests, but no trees; and water, but no fish?",
+    answer: "map"
+  },
+  {
+    riddle: "The person who makes it, sells it. The person who buys it never uses it. The person who uses it never knows they’re using it. What is it?",
+    answer: "coffin"
+  },
+  {
+    riddle: "I have branches, but no fruit, trunk or leaves. What am I?",
+    answer: "bank"
+  },
+  {
+    riddle: "What comes once in a minute, twice in a moment, but never in a thousand years?",
+    answer: "m"
+  },
+  {
+    riddle: "I am always hungry and will die if not fed, but whatever I touch will soon turn red. What am I?",
+    answer: "fire"
+  },
+  {
+    riddle: "Forward I am heavy, but backward I’m not. What am I?",
+    answer: "ton"
+  },
+  {
+    riddle: "I am the beginning of the end, and the end of time and space. What am I?",
+    answer: "e"
+  }
+];
+
+
+    let currentClue = 0;
+    let numberOfAttemps = 0;
+
+    const clueText = document.getElementById("clueText");
+    const input = document.getElementById("answerInput");
+    const feedback = document.getElementById("feedback");
+    const winModal = document.getElementById("winModal");
+    const loseModal = document.getElementById("loseModal");
+
+    function showClue() {
+      clueText.textContent = clues[currentClue].riddle;
+      input.value = "";
+      input.focus();
+      feedback.textContent = "";
+    }
+
+    function checkAnswer() {
+      const userAnswer = input.value.trim().toLowerCase();
+      const correctAnswer = clues[currentClue].answer.toLowerCase();
+
+      if (userAnswer === correctAnswer) {
+        currentClue++;
+        if (currentClue >= clues.length) {
+          showWin();
+        } else {
+          showClue();
+        }
+      } else {
+        numberOfAttemps++;
+        if(numberOfAttemps < 6){
+        feedback.textContent = "❌ Incorrect. Try again!";
+        }else{
+            showGameOver();
+            numberOfAttemps = 0;
+        }
+      }
+    }
+
+    function showWin() {
+      winModal.classList.add("show");
+    }
+
+    function showGameOver(){
+     loseModal.classList.add("show");
+    }
+
+    function restartGame() {
+      currentClue = 0;
+      winModal.classList.remove("show");
+      loseModal.classList.remove("show");
+      showClue();
+    }
+
+    document.getElementById("submitBtn").addEventListener("click", 
+    () => {
+    checkAnswer();
+    });
+    input.addEventListener("keyup", (e) => {
+      if (e.key === "Enter") checkAnswer();
+    });
+
+    // Start game
+    showClue();
+  </script>
+
+</body>
+</html>
