@@ -50,16 +50,20 @@ var activityLog = document.querySelector('.activity-log');
 var Reward = document.querySelector('.rewards');
 var games = ['Word chain', 'Treasure Hunt'];
 var logs = [];
+var username = '';
 window.onload = function () { return __awaiter(_this, void 0, void 0, function () {
-    var i, card;
+    var params, name, i, card;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, fetchAvailableGames()];
             case 1:
                 _a.sent();
+                params = new URLSearchParams(window.location.search);
+                name = params.get('name');
+                username = name;
                 dashboard.innerHTML = ''; // Clear existing cards before adding new ones
                 for (i = 0; i < numberOfGames; i++) {
-                    card = "\n  <div class=\"available-triva\">\n    <div class=\"trivia-card\">\n      <img src=\"https://picsum.photos/400/200?random=".concat(i, "\" alt=\"General Knowledge\">\n      <h3>\uD83C\uDFAF ").concat(games[i], "</h3>\n      <p>Players: ").concat(0, "</p>\n      <button>Join Game</button>\n    </div>\n  </div>\n");
+                    card = "\n  <div class=\"available-triva\">\n    <div class=\"trivia-card\">\n      <img src=\"https://picsum.photos/400/200?random=".concat(i, "\" alt=\"General Knowledge\">\n      <h3>\uD83C\uDFAF ").concat(games[i], "</h3>\n      <p>Players: ").concat(0, "</p>\n      <button onclick= \"runGame(").concat(i, ")\">Join Game</button>\n    </div>\n  </div>\n");
                     dashboard.innerHTML += card;
                 }
                 displayBoxes();
@@ -67,6 +71,16 @@ window.onload = function () { return __awaiter(_this, void 0, void 0, function (
         }
     });
 }); };
+function runGame(index) {
+    switch (index) {
+        case 0:
+            window.location.href = "/games/word.html?name=".concat(encodeURIComponent(username));
+            break;
+        case 1:
+            window.location.href = "/games/treasure-hunt.html?name=".concat(encodeURIComponent(username));
+            break;
+    }
+}
 function displayBoxes() {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {

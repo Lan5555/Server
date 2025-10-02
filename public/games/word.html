@@ -178,7 +178,7 @@
       <button class="restart-btn" onclick="restartGame()">Try Again</button>
     </div>
   </div>
-
+  <script src="/socket.io/socket.io.js"></script>
   <script>
     const input = document.getElementById("inputWord");
     const submit = document.getElementById("submitBtn");
@@ -188,11 +188,16 @@
 
     const winModal = document.getElementById("winModal");
     const loseModal = document.getElementById("loseModal");
+    let username = '';
 
     let words = [];
     let timer = 10;
     let interval;
     const maxWords = 20;
+
+    const params = new URLSearchParams(window.location.search);
+    const nameVal = params.get('name');
+    username = nameVal;
 
     function startTimer() {
       clearInterval(interval);
@@ -231,6 +236,7 @@
     }
 
     function gameOver() {
+       showStatus();
       clearInterval(interval);
       loseModal.classList.add("show");
     }
@@ -279,6 +285,31 @@
 
     // Start the game initially
     restartGame();
+
+    async function showStatus(){
+      try{
+        const res = await fetch('/api/show-status',{
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json'
+          },
+          body:JSON.stringify({
+            name:username
+          })
+        })
+      }catch(e){
+        alert(e);
+      }
+    }
+
+    const socket = io();
+    socket.on('lose', (message) => {
+  if (message && Object.keys(message).length > 0) {
+  alert(`${message.name} lost`);
+ }
+
+});
+
   </script>
 </body>
 </html>

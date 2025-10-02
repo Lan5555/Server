@@ -191,11 +191,61 @@
       transform: scale(1.05);
     }
 
+    .logger{
+      position: fixed;
+      top: 100px;
+      right: 10px;
+      border-radius: 20px;
+      background-color: white;
+      z-index: 20;
+      box-shadow: 0 0.15rem 1.75rem 0 rgba(33 40 50 / 15%);
+      max-height: 200px;
+      overflow: auto;
+      width: 20%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 10px;
+      height: 200px;
+      animation: float 1s infinite;
+    }
+    .logger li{
+      padding: 10px;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+      width: 100%;
+    }
+    .logger ul{
+      list-style: decimal
+    }
+
     @media (max-width: 1024px) {
       .dashboard {
         grid-template-columns: 1fr;
       }
+      .logger{
+      width: 40%;
+     }
+      
     }
+
+    @keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.float {
+  animation: float 3s ease-in-out infinite;
+}
+
+    
   </style>
 </head>
 <body>
@@ -205,10 +255,13 @@
     Trivia Game Lobby
     <i class="fa-solid fa-trophy"></i>
   </h1>
-
-  <div class="dashboard">
+  <div class="logger">
 
   </div>
+
+  <div class="dashboard">
+  </div>
+  
 </body>
 <script src="main.js"></script>
 <script src="/socket.io/socket.io.js"></script>
@@ -220,5 +273,22 @@
       el.textContent = "Players Online: " + count;
     });
   });
+
+  socket.on("players", (players) => {
+  document.querySelector('.logger').innerHTML = 
+    `<ul>${
+      players.map((player) => `<li>${player.name} joined</li>`).join('')
+    }</ul>`;
+ });
+
+    socket.on('lose', (message) => {
+   if (message && Object.keys(message).length > 0) {
+    alert(`${message.name} lost`);
+   }
+    });
+
+    socket.on('connection', () => {
+  console.log('Socket connected:', socket.id);
+ });
 </script>
 </html>

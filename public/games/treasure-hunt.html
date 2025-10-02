@@ -143,7 +143,7 @@
       <button class="restart-btn" onclick="restartGame()">Play Again</button>
     </div>
   </div>
-
+  <script src="/socket.io/socket.io.js"></script>
   <script>
     const clues = [
   {
@@ -210,6 +210,10 @@
     const feedback = document.getElementById("feedback");
     const winModal = document.getElementById("winModal");
     const loseModal = document.getElementById("loseModal");
+    let username = '';
+    const params = new URLSearchParams(window.location.search);
+    const nameVal = params.get('name');
+    username = nameVal;
 
     function showClue() {
       clueText.textContent = clues[currentClue].riddle;
@@ -234,9 +238,27 @@
         if(numberOfAttemps < 6){
         feedback.textContent = "❌ Incorrect. Try again!";
         }else{
+            showStatus();
             showGameOver();
             numberOfAttemps = 0;
         }
+      }
+    }
+
+    async function showStatus(){
+      
+      try{
+        const res = await fetch('/api/show-status',{
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json'
+          },
+          body:JSON.stringify({
+            name:username
+          })
+        })
+      }catch(e){
+        alert(e);
       }
     }
 
@@ -265,6 +287,15 @@
 
     // Start game
     showClue();
+
+    const socket = io();
+    socket.on('lose', (message) => {
+  if (message && Object.keys(message).length > 0) {
+  alert(`${message.name} lost`);
+  }
+
+});
+
   </script>
 
 </body>

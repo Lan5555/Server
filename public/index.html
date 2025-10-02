@@ -27,14 +27,45 @@
             <p>&copy; 2025 Lan's server. All rights reserved.</p>
         </footer>
     </div>
-
+    
+    <form class="name">
+        <h2>Enter your name</h2>
+        <fieldset>
+            <legend>Type here *</legend>
+            <input class="input" placeholder="Your name" required>
+        </fieldset>
+        <button type="submit">Enter</button>
+    </form>
     <div class="available-triva"></div>
     
     <script>
         const startButton = document.querySelector('#start-btn');
+        const begin = document.querySelector('.name');
+        const input = document.querySelector('.input');
+ 
         startButton.addEventListener('click',() => {
-            window.location.href = 'dashboard.html';
+            begin.style.display = 'flex';
         });
+        begin.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    try {
+        const res = await fetch('/api/store-name', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: input.value
+            })
+        });
+        window.location.href = `dashboard.html?name=${encodeURIComponent(input.value)}`;
+
+    } catch (e) {
+        alert('Error: ' + e.message);
+    }
+  });
+
     </script>
 </body>
 </html>

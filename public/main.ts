@@ -4,10 +4,14 @@ const activityLog = document.querySelector('.activity-log') as HTMLElement;
 const Reward = document.querySelector('.rewards') as HTMLElement;
 const games = ['Word chain','Treasure Hunt'];
 const logs:string[] = [];
+let username:any = '';
 
 
 window.onload = async () => {
   await fetchAvailableGames();
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get('name');
+  username = name;
   dashboard.innerHTML = '';  // Clear existing cards before adding new ones
   for (let i = 0; i < numberOfGames; i++) {
     const card = `
@@ -16,13 +20,25 @@ window.onload = async () => {
       <img src="https://picsum.photos/400/200?random=${i}" alt="General Knowledge">
       <h3>🎯 ${games[i]}</h3>
       <p>Players: ${0}</p>
-      <button>Join Game</button>
+      <button onclick= "runGame(${i})">Join Game</button>
     </div>
   </div>
 `;
     dashboard.innerHTML += card;
   }
  displayBoxes();
+}
+
+function runGame(index:any){
+  switch(index){
+    case 0:
+      window.location.href = `/games/word.html?name=${encodeURIComponent(username)}`;
+      break;
+    case 1:
+      window.location.href = `/games/treasure-hunt.html?name=${encodeURIComponent(username)}`;
+
+      break;
+  }
 }
 
 async function displayBoxes(){
